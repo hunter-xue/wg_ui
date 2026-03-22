@@ -72,7 +72,7 @@ func NewFormModel(store *db.Store, existing *db.Server) FormModel {
 		inputs[fieldDNS].SetValue(existing.DNS)
 		inputs[fieldPostUp].SetValue(existing.PostUp)
 		inputs[fieldPostDown].SetValue(existing.PostDown)
-		inputs[fieldEndpoint].SetValue(existing.Description)
+		inputs[fieldEndpoint].SetValue(existing.Endpoint)
 		inputs[fieldComments].SetValue(existing.Comments)
 	}
 
@@ -176,7 +176,7 @@ func (m FormModel) save() tea.Cmd {
 			DNS:         m.inputs[fieldDNS].Value(),
 			PostUp:      m.inputs[fieldPostUp].Value(),
 			PostDown:    m.inputs[fieldPostDown].Value(),
-			Description: m.inputs[fieldEndpoint].Value(),
+			Endpoint:    m.inputs[fieldEndpoint].Value(),
 			Comments:    m.inputs[fieldComments].Value(),
 		}
 

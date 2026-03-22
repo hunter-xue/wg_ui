@@ -14,7 +14,7 @@ create table main.wg_server
     dns         TEXT,
     post_up     TEXT,
     post_down   TEXT,
-    description TEXT,
+    endpoint    TEXT,
     comments    TEXT
 );
 
@@ -38,5 +38,14 @@ create table main.wg_clients
     persistent_keepalive integer           not null
 );
 
+create table main.sys_users
+(
+    id     integer not null
+        constraint sys_users_pk
+            primary key autoincrement,
+    name   TEXT    not null,
+    passwd TEXT    not null,
+    roles   TEXT    not null
+);
 
 ```

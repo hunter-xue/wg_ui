@@ -18,6 +18,9 @@ const (
 	ScreenClientDetail
 	ScreenInstall
 	ScreenStatus
+	ScreenSetupPassword
+	ScreenSettings
+	ScreenChangePassword
 )
 
 // Navigation messages

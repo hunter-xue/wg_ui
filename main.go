@@ -11,19 +11,24 @@ import (
 	"wg_ui/internal/tui/client"
 	"wg_ui/internal/tui/menu"
 	"wg_ui/internal/tui/server"
+	"wg_ui/internal/tui/settings"
+	"wg_ui/internal/tui/setup"
 	"wg_ui/internal/tui/status"
 )
 
 type app struct {
-	root    tui.RootModel
-	store   *db.Store
-	menu    menu.Model
-	statusM status.Model
-	serverV server.ViewModel
-	serverF server.FormModel
-	clientL client.ListModel
-	clientF client.FormModel
-	clientD client.DetailModel
+	root     tui.RootModel
+	store    *db.Store
+	menu     menu.Model
+	statusM  status.Model
+	serverV  server.ViewModel
+	serverF  server.FormModel
+	clientL  client.ListModel
+	clientF  client.FormModel
+	clientD  client.DetailModel
+	setupM   setup.Model
+	settingsM settings.Model
+	chPassM  settings.ChangePasswordModel
 }
 
 func newApp(store *db.Store) *app {
@@ -106,6 +111,42 @@ func newApp(store *db.Store) *app {
 		return a.statusM.Init()
 	}
 
+	// Wire setup (first-run password)
+	a.root.SetupView = func() string { return a.setupM.View() }
+	a.root.SetupUpdate = func(msg tea.Msg) tea.Cmd {
+		var cmd tea.Cmd
+		a.setupM, cmd = a.setupM.Update(msg)
+		return cmd
+	}
+	a.root.SetupInit = func() tea.Cmd {
+		a.setupM = setup.NewModel(store)
+		return a.setupM.Init()
+	}
+
+	// Wire settings
+	a.root.SettingsView = func() string { return a.settingsM.View() }
+	a.root.SettingsUpdate = func(msg tea.Msg) tea.Cmd {
+		var cmd tea.Cmd
+		a.settingsM, cmd = a.settingsM.Update(msg)
+		return cmd
+	}
+	a.root.SettingsInit = func() tea.Cmd {
+		a.settingsM = settings.NewModel(store)
+		return a.settingsM.Init()
+	}
+
+	// Wire change password
+	a.root.ChPassView = func() string { return a.chPassM.View() }
+	a.root.ChPassUpdate = func(msg tea.Msg) tea.Cmd {
+		var cmd tea.Cmd
+		a.chPassM, cmd = a.chPassM.Update(msg)
+		return cmd
+	}
+	a.root.ChPassInit = func() tea.Cmd {
+		a.chPassM = settings.NewChangePasswordModel(store)
+		return a.chPassM.Init()
+	}
+
 	// Screen switch handler - initialize sub-models with context
 	a.root.OnSwitchScreen = func(screen tui.Screen) {
 		switch screen {
@@ -132,6 +173,12 @@ func newApp(store *db.Store) *app {
 		case tui.ScreenClientDetail:
 			sel := a.clientL.SelectedClient()
 			a.clientD = client.NewDetailModel(sel)
+		case tui.ScreenSettings:
+			a.settingsM = settings.NewModel(store)
+		case tui.ScreenChangePassword:
+			a.chPassM = settings.NewChangePasswordModel(store)
+		case tui.ScreenSetupPassword:
+			a.setupM = setup.NewModel(store)
 		}
 	}
 
@@ -159,6 +206,8 @@ func (a *app) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a, tui.SwitchScreen(tui.ScreenClientList)
 		case menu.Status:
 			return a, tui.SwitchScreen(tui.ScreenStatus)
+		case menu.Settings:
+			return a, tui.SwitchScreen(tui.ScreenSettings)
 		case menu.Quit:
 			return a, tea.Quit
 		}
@@ -182,6 +231,13 @@ func main() {
 	defer store.Close()
 
 	a := newApp(store)
+
+	// First-run: if no admin user exists, start at setup screen
+	if user, _ := store.GetAdminUser(); user == nil {
+		a.setupM = setup.NewModel(store)
+		a.root.SetInitialScreen(tui.ScreenSetupPassword)
+	}
+
 	p := tea.NewProgram(a, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)

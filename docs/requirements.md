@@ -14,9 +14,21 @@ https://www.man7.org/linux/man-pages/man8/wg.8.html
 
 ---
 
+## 首次运行密码设置
+
+首次启动程序时（数据库中 `sys_users` 表为空），在进入主菜单前强制显示密码设置界面：
+
+- 输入两次密码（两次必须一致，不能为空）
+- 密码以 bcrypt 哈希存储，写入 `sys_users` 表（name=`admin`，roles=`admin`）
+- 设置成功后自动进入主菜单
+
+再次启动时检测到已有 admin 用户，直接显示主菜单（当前版本不做登录验证）。
+
+---
+
 ## 主菜单
 
-应用启动后显示主菜单，包含以下5个选项：
+应用启动后显示主菜单，包含以下6个选项：
 
 | 选项 | 功能 |
 |------|------|
@@ -24,6 +36,7 @@ https://www.man7.org/linux/man-pages/man8/wg.8.html
 | Server Management | 服务器配置管理 |
 | Client Management | 客户端管理（需要先配置服务器） |
 | Status | 查看运行状态 |
+| Settings | 系统设置（修改密码、同步配置） |
 | Quit | 退出程序 |
 
 按键：↑/↓ 导航，Enter 选择，q 退出。
@@ -38,12 +51,13 @@ https://www.man7.org/linux/man-pages/man8/wg.8.html
 显示提示"WireGuard is already installed"，并显示当前服务状态（`systemctl status wg-quick@wg0` 输出）。按 esc/q 返回主菜单。
 
 ### 未安装
-按顺序执行以下4个步骤，每步显示 spinner 动画，完成后打 ✓，失败打 ✗ 并显示错误日志：
+按顺序执行以下5个步骤，每步显示 spinner 动画，完成后打 ✓，失败打 ✗ 并显示错误日志：
 
 1. **Updating package list** — `apt-get update -y`
 2. **Installing WireGuard** — `apt-get install -y wireguard`
-3. **Enabling IP forwarding** — `sysctl -w net.ipv4.ip_forward=1`
-4. **Configuring systemd service** — `systemctl enable wg-quick@wg0`
+3. **Checking iptables** — 检测 `iptables` 是否已安装（Debian 11+ 默认不包含）；若未安装则执行 `apt-get install -y iptables`
+4. **Enabling IP forwarding** — `sysctl -w net.ipv4.ip_forward=1`
+5. **Configuring systemd service** — `systemctl enable wg-quick@wg0`
 
 安装完成（成功或失败）后停留在安装界面显示完整日志，按 esc/q 返回主菜单。
 
@@ -146,6 +160,26 @@ https://www.man7.org/linux/man-pages/man8/wg.8.html
 
 ---
 
+## 设置界面
+
+从主菜单选择 "Settings" 进入，显示两个子选项：
+
+### Change Password（修改密码）
+- 输入当前密码、新密码、确认新密码
+- 验证当前密码正确后，才允许设置新密码
+- 新密码两次输入须一致，且不能为空
+- 修改成功后返回 Settings 界面
+
+### Sync Server Config（同步服务器配置）
+- 根据数据库中当前的服务器和客户端信息，重新生成 `/etc/wireguard/wg0.conf`
+- 若配置文件已存在，先备份为 `wg0.conf.bak.YYYYMMDDHHMMSS`，再删除旧文件，写入新文件
+- 生成后执行 `wg syncconf` 使配置立即生效
+- 操作结果（成功/失败）显示在 Settings 界面
+
+按 esc 返回主菜单。
+
+---
+
 ## 状态界面
 
 从主菜单选择 "Status" 进入，显示以下信息：
@@ -191,4 +225,4 @@ Endpoint = <endpoint>
 PersistentKeepalive = 25
 ```
 
-Endpoint 取自服务器表单的 Endpoint 输入项（存储在 `wg_server.description` 字段），格式为 `ip:port`，为必填项。
+Endpoint 取自服务器表单的 Endpoint 输入项（存储在 `wg_server.endpoint` 字段），格式为 `ip:port`，为必填项。

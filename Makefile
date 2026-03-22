@@ -11,7 +11,10 @@ linux:
 	GOOS=linux GOARCH=amd64 go build -o $(BUILD_DIR)/wg_ui_linux .
 
 deploy: linux
-	scp $(BUILD_DIR)/wg_ui_linux root@10.100.2.177:/root/wg_ui
+ifndef HOST
+	$(error HOST is required, e.g. make deploy HOST=1.2.3.4)
+endif
+	scp $(BUILD_DIR)/wg_ui_linux root@$(HOST):/root/wg_ui
 
 test:
 	go test ./...

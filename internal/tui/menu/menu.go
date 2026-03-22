@@ -16,6 +16,7 @@ const (
 	ServerMgmt
 	ClientMgmt
 	Status
+	Settings
 	Quit
 )
 
@@ -24,6 +25,7 @@ var choices = []string{
 	"Server Management",
 	"Client Management",
 	"Status",
+	"Settings",
 	"Quit",
 }
 

@@ -41,8 +41,15 @@ CREATE TABLE IF NOT EXISTS wg_server (
     dns         TEXT,
     post_up     TEXT,
     post_down   TEXT,
-    description TEXT,
+    endpoint    TEXT,
     comments    TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sys_users (
+    id     INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name   TEXT    NOT NULL,
+    passwd TEXT    NOT NULL,
+    roles  TEXT    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS wg_clients (

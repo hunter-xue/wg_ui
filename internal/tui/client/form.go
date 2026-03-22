@@ -226,7 +226,7 @@ func (m FormModel) save() tea.Cmd {
 
 		// Generate client config and store in description (reuse srv loaded above)
 		if err == nil && srv != nil {
-			endpoint := srv.Description // public IP stored in description
+			endpoint := srv.Endpoint
 			if endpoint == "" {
 				endpoint = "YOUR_SERVER_IP:PORT"
 			}

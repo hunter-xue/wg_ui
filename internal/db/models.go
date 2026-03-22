@@ -11,8 +11,15 @@ type Server struct {
 	DNS         string
 	PostUp      string
 	PostDown    string
-	Description string // used to store endpoint (public IP)
+	Endpoint    string
 	Comments    string
+}
+
+type User struct {
+	ID     int64
+	Name   string
+	Passwd string // bcrypt hash
+	Roles  string
 }
 
 type Client struct {

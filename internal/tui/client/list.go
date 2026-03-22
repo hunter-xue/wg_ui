@@ -136,7 +136,7 @@ func (m ListModel) regenKeypair() tea.Cmd {
 			return tui.ErrorMsg{Err: err}
 		}
 		if srv != nil {
-			endpoint := srv.Description
+			endpoint := srv.Endpoint
 			if endpoint == "" {
 				endpoint = "YOUR_SERVER_IP:PORT"
 			}

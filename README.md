@@ -8,6 +8,7 @@
 - **服务器管理**：创建、编辑、删除 WireGuard 服务器，自动生成配置文件
 - **客户端管理**：创建、编辑、启用/禁用、重新生成密钥对，自动生成客户端配置文件
 - **状态查看**：查看服务运行状态和客户端统计
+- **设置**：修改 admin 密码、重新同步服务器配置文件（自动备份旧文件）
 
 ## 系统要求
 
@@ -23,7 +24,7 @@
 make linux
 
 # 上传到服务器（构建产物在 build/ 目录）
-scp build/wg_ui_linux root@your-server:/root/wg_ui
+make deploy HOST=your-server-ip
 ```
 
 ## 运行
@@ -38,6 +39,25 @@ chmod +x /root/wg_ui
 ---
 
 ## 使用教程
+
+### 首次运行：设置密码
+
+首次启动时，程序会显示密码设置界面（数据库中尚无管理员账户）：
+
+```
+First Run Setup
+
+Please set an admin password to protect this application.
+
+Password        [          ]
+Confirm Password[          ]
+
+tab: next field • enter: confirm
+```
+
+输入两次相同的密码后按 Enter 确认，即可进入主菜单。密码以 bcrypt 哈希存储。
+
+---
 
 ### 第一步：安装 WireGuard
 
@@ -151,6 +171,14 @@ PersistentKeepalive = 25
 - 服务器地址和端口
 - 客户端总数、已启用数量、已禁用数量
 
+#### 系统设置
+
+主菜单选择 **Settings**，包含两个选项：
+
+**Change Password**：修改 admin 密码。需先输入当前密码验证，再输入两次新密码确认。
+
+**Sync Server Config**：根据数据库当前内容重新生成服务器配置文件。若 `/etc/wireguard/wg0.conf` 已存在，自动备份为 `wg0.conf.bak.YYYYMMDDHHMMSS` 后写入新配置，并执行 `wg syncconf` 立即生效。适用于配置文件丢失或需要强制与数据库保持一致的场景。
+
 #### 按键速查
 
 | 界面 | 按键 | 功能 |
@@ -167,6 +195,9 @@ PersistentKeepalive = 25
 | 服务器界面 | `e` | 编辑服务器 |
 | 服务器界面 | `d` | 删除服务器 |
 | 服务器界面 | `s` | 查看服务状态 |
+| Settings 界面 | `↑` `↓` | 移动光标 |
+| Settings 界面 | `Enter` | 执行选中操作 |
+| Settings 界面 | `esc` | 返回主菜单 |
 | 表单 | `Tab` | 下一个字段 |
 | 表单 | `Shift+Tab` | 上一个字段 |
 | 表单 | `Enter`（最后字段） | 保存 |
@@ -179,7 +210,7 @@ PersistentKeepalive = 25
 # 依赖 Go 1.21+
 go build -o build/wg_ui .   # 本地构建（产物在 build/ 目录）
 make linux                    # 交叉编译 Linux amd64
-make deploy                   # 编译并 SCP 到测试服务器
+make deploy HOST=1.2.3.4      # 编译并 SCP 到指定服务器
 go test ./...                 # 运行测试
 make clean                    # 清理 build/ 目录
 ```

@@ -41,6 +41,21 @@ var InstallSteps = []InstallStep{
 		},
 	},
 	{
+		Name: "Checking iptables...",
+		Run: func(ctx context.Context) (string, error) {
+			// iptables is not included by default on Debian 11+
+			_, _, err := shell.Run(ctx, "which", "iptables")
+			if err == nil {
+				return "iptables already installed", nil
+			}
+			stdout, stderr, err := shell.Run(ctx, "apt-get", "install", "-y", "iptables")
+			if err != nil {
+				return stderr, fmt.Errorf("apt-get install iptables failed: %w", err)
+			}
+			return stdout, nil
+		},
+	},
+	{
 		Name: "Enabling IP forwarding...",
 		Run: func(ctx context.Context) (string, error) {
 			stdout, stderr, err := shell.Run(ctx, "sysctl", "-w", "net.ipv4.ip_forward=1")

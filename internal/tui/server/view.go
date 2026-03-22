@@ -133,8 +133,8 @@ func (m ViewModel) View() string {
 	if srv.PostDown != "" {
 		s += renderField("PostDown", srv.PostDown)
 	}
-	if srv.Description != "" {
-		s += renderField("Endpoint", srv.Description)
+	if srv.Endpoint != "" {
+		s += renderField("Endpoint", srv.Endpoint)
 	}
 
 	if m.status != "" {

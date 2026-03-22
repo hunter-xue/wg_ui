@@ -61,6 +61,15 @@ type RootModel struct {
 	StatusView     func() string
 	StatusUpdate   func(tea.Msg) tea.Cmd
 	StatusInit     func() tea.Cmd
+	SetupView      func() string
+	SetupUpdate    func(tea.Msg) tea.Cmd
+	SetupInit      func() tea.Cmd
+	SettingsView   func() string
+	SettingsUpdate func(tea.Msg) tea.Cmd
+	SettingsInit   func() tea.Cmd
+	ChPassView     func() string
+	ChPassUpdate   func(tea.Msg) tea.Cmd
+	ChPassInit     func() tea.Cmd
 
 	// Callbacks for creating sub-models with context
 	OnSwitchScreen func(screen Screen)
@@ -171,6 +180,18 @@ func (m RootModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.StatusUpdate != nil {
 			cmd = m.StatusUpdate(msg)
 		}
+	case ScreenSetupPassword:
+		if m.SetupUpdate != nil {
+			cmd = m.SetupUpdate(msg)
+		}
+	case ScreenSettings:
+		if m.SettingsUpdate != nil {
+			cmd = m.SettingsUpdate(msg)
+		}
+	case ScreenChangePassword:
+		if m.ChPassUpdate != nil {
+			cmd = m.ChPassUpdate(msg)
+		}
 	}
 
 	if m.loading {
@@ -274,6 +295,18 @@ func (m RootModel) initScreen(s Screen) tea.Cmd {
 		if m.StatusInit != nil {
 			return m.StatusInit()
 		}
+	case ScreenSetupPassword:
+		if m.SetupInit != nil {
+			return m.SetupInit()
+		}
+	case ScreenSettings:
+		if m.SettingsInit != nil {
+			return m.SettingsInit()
+		}
+	case ScreenChangePassword:
+		if m.ChPassInit != nil {
+			return m.ChPassInit()
+		}
 	}
 	return nil
 }
@@ -312,9 +345,25 @@ func (m RootModel) View() string {
 		if m.StatusView != nil {
 			return m.StatusView()
 		}
+	case ScreenSetupPassword:
+		if m.SetupView != nil {
+			return m.SetupView()
+		}
+	case ScreenSettings:
+		if m.SettingsView != nil {
+			return m.SettingsView()
+		}
+	case ScreenChangePassword:
+		if m.ChPassView != nil {
+			return m.ChPassView()
+		}
 	}
 
 	return "Loading..."
+}
+
+func (m *RootModel) SetInitialScreen(s Screen) {
+	m.screen = s
 }
 
 func (m *RootModel) StartInstall() tea.Cmd {
