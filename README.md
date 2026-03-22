@@ -77,7 +77,7 @@ esc/q: back to menu
 | DNS | 留空 | 可选 |
 | PostUp | （已预填）| iptables 转发规则，通常保持默认 |
 | PostDown | （已预填）| iptables 清理规则，通常保持默认 |
-| Endpoint | `1.2.3.4` | **服务器公网 IP**，用于生成客户端配置 |
+| Endpoint | `1.2.3.4:51820` | **客户端连接地址，格式 ip:port**。服务器可能经过 NAT/防火墙，对外端口不一定等于 Listen Port，需单独填写 |
 | Comments | 留空 | 备注，可选 |
 
 Tab 键切换字段，在最后一个字段按 Enter 保存。

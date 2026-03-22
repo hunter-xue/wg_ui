@@ -72,7 +72,7 @@ https://www.man7.org/linux/man-pages/man8/wg.8.html
 | DNS | 否 | 空 | DNS 服务器（可选） |
 | PostUp | 否 | `iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE` | 启动后执行 |
 | PostDown | 否 | `iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE` | 停止后执行 |
-| Endpoint | 否 | 空 | 服务器公网 IP，用于生成客户端配置文件 |
+| Endpoint | 是 | — | 客户端连接地址，格式 `ip:port`（如 `1.2.3.4:51820`）。因服务器可能位于 NAT/防火墙后，对外端口不一定等于 Listen Port，需单独填写 |
 | Comments | 否 | 空 | 备注 |
 
 表单按键：Tab/↓ 下一字段，Shift+Tab/↑ 上一字段，在最后一个字段按 Enter 保存，esc 取消。
@@ -187,8 +187,8 @@ MTU = 1420
 [Peer]
 PublicKey = <server_public_key>
 AllowedIPs = 100.100.0.0/24, 10.100.0.0/16
-Endpoint = <server_endpoint_ip>:<server_listen_port>
+Endpoint = <endpoint>
 PersistentKeepalive = 25
 ```
 
-服务器公网 IP 取自 `wg_server.description` 字段（Endpoint 输入项）。若未填写，默认显示 `YOUR_SERVER_IP`。
+Endpoint 取自服务器表单的 Endpoint 输入项（存储在 `wg_server.description` 字段），格式为 `ip:port`，为必填项。

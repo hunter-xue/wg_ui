@@ -51,7 +51,7 @@ func GenerateClientConfig(server *db.Server, client *db.Client, endpoint string)
 	b.WriteString(fmt.Sprintf("\n[Peer]\n"))
 	b.WriteString(fmt.Sprintf("PublicKey = %s\n", server.PublicKey))
 	b.WriteString(fmt.Sprintf("AllowedIPs = %s\n", client.AllowIPs))
-	b.WriteString(fmt.Sprintf("Endpoint = %s:%d\n", endpoint, server.ListenPort))
+	b.WriteString(fmt.Sprintf("Endpoint = %s\n", endpoint))
 	if client.PersistentKeepalive > 0 {
 		b.WriteString(fmt.Sprintf("PersistentKeepalive = %d\n", client.PersistentKeepalive))
 	}

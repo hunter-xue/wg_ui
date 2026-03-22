@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"net"
 	"strconv"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -53,7 +54,7 @@ func NewFormModel(store *db.Store, existing *db.Server) FormModel {
 	inputs[fieldDNS].Placeholder = "DNS (optional)"
 	inputs[fieldPostUp].Placeholder = "PostUp rules, use ; to separate multiple commands"
 	inputs[fieldPostDown].Placeholder = "PostDown rules, use ; to separate multiple commands"
-	inputs[fieldEndpoint].Placeholder = "Public IP (for client configs)"
+	inputs[fieldEndpoint].Placeholder = "ip:port (e.g. 1.2.3.4:51820)"
 	inputs[fieldComments].Placeholder = "Comments (optional)"
 
 	// Default values for new server
@@ -143,8 +144,15 @@ func (m FormModel) save() tea.Cmd {
 		portStr := m.inputs[fieldListenPort].Value()
 		mtuStr := m.inputs[fieldMTU].Value()
 
-		if name == "" || address == "" || portStr == "" {
-			return tui.ErrorMsg{Err: fmt.Errorf("name, address, and port are required")}
+		endpoint := m.inputs[fieldEndpoint].Value()
+
+		if name == "" || address == "" || portStr == "" || endpoint == "" {
+			return tui.ErrorMsg{Err: fmt.Errorf("name, address, listen port, and endpoint are required")}
+		}
+
+		// Validate endpoint format: must be host:port
+		if _, _, err := net.SplitHostPort(endpoint); err != nil {
+			return tui.ErrorMsg{Err: fmt.Errorf("endpoint must be in ip:port format (e.g. 1.2.3.4:51820)")}
 		}
 
 		port, err := strconv.Atoi(portStr)

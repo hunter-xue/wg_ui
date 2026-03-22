@@ -228,7 +228,7 @@ func (m FormModel) save() tea.Cmd {
 		if err == nil && srv != nil {
 			endpoint := srv.Description // public IP stored in description
 			if endpoint == "" {
-				endpoint = "YOUR_SERVER_IP"
+				endpoint = "YOUR_SERVER_IP:PORT"
 			}
 			clientConfig := wg.GenerateClientConfig(srv, c, endpoint)
 			c.Description = clientConfig

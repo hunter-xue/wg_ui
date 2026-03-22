@@ -138,7 +138,7 @@ func (m ListModel) regenKeypair() tea.Cmd {
 		if srv != nil {
 			endpoint := srv.Description
 			if endpoint == "" {
-				endpoint = "YOUR_SERVER_IP"
+				endpoint = "YOUR_SERVER_IP:PORT"
 			}
 			c.Description = wg.GenerateClientConfig(srv, &c, endpoint)
 		}
