@@ -14,10 +14,13 @@ type DetailModel struct {
 	viewport viewport.Model
 }
 
+const separator = "─────────────────────────────────────────────────────────────────────────────"
+
 func NewDetailModel(c *db.Client) DetailModel {
 	vp := viewport.New(80, 20)
 	if c != nil {
-		vp.SetContent(c.Description)
+		content := separator + "\n" + c.Description + "\n" + separator
+		vp.SetContent(content)
 	}
 	return DetailModel{client: c, viewport: vp}
 }
@@ -49,9 +52,10 @@ func (m DetailModel) View() string {
 	s := tui.TitleStyle.Render("Client Config") + "\n"
 
 	if m.client != nil {
-		s += tui.LabelStyle.Render("Client: "+m.client.Name) + "\n\n"
+		s += tui.LabelStyle.Render("Client: "+m.client.Name) + "\n"
 	}
 
+	s += tui.HelpStyle.Render("Copy the configuration between the lines into your WireGuard client app.") + "\n\n"
 	s += m.viewport.View() + "\n"
 	s += tui.HelpStyle.Render("↑/↓: scroll • esc: back • q: quit")
 	return s

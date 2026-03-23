@@ -48,7 +48,7 @@ func NewFormModel(store *db.Store, existing *db.Server) FormModel {
 
 	inputs[fieldName].Placeholder = "Server name"
 	inputs[fieldName].Focus()
-	inputs[fieldAddress].Placeholder = "100.100.0.1/32"
+	inputs[fieldAddress].Placeholder = "100.100.0.1/24"
 	inputs[fieldListenPort].Placeholder = "51820"
 	inputs[fieldMTU].Placeholder = "1420"
 	inputs[fieldDNS].Placeholder = "DNS (optional)"

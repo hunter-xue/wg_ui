@@ -45,7 +45,7 @@ func NewFormModel(store *db.Store, serverID int64, existing *db.Client) FormMode
 
 	inputs[cFieldName].Placeholder = "Client name"
 	inputs[cFieldName].Focus()
-	inputs[cFieldAddress].Placeholder = "100.100.0.x/32"
+	inputs[cFieldAddress].Placeholder = "100.100.0.x/24"
 	inputs[cFieldAllowIPs].Placeholder = "100.100.0.0/24, 10.100.0.0/16"
 	inputs[cFieldMTU].Placeholder = "MTU"
 	inputs[cFieldDNS].Placeholder = "DNS (optional)"
